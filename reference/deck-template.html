@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Keynote Deck template. Copy this file, retitle it, replace the slides.
+     Present: open in a browser, press F for full screen, arrow keys to move.
+     Export PDF: the "Save as PDF" button, or the browser Print dialog. -->
+<title>Deck title goes here</title>
+<style>
+  /* ================= DESIGN TOKENS =================
+     Retheme by editing these. Pick one ground hue + one accent; tint the
+     neutrals slightly toward the accent so they read as chosen, not default. */
+  :root {
+    --ground: #140e08; --ground-2: #1b130c; --panel: #241a12; --panel-2: #2c2016;
+    --line: #40332a; --line-soft: #2f251d;
+    --paper: #faf6ec; --sand: #d8c6ad; --muted: #a3907c; --faint: #7c6a5a;
+    --clay: #ec9873; --clay-bright: #f3b393; --clay-deep: #b0492c;
+    --ok: #4ade80; --warn: #fbbf24; --err: #f87171; --violet: #c4b5fd;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { background: var(--ground); color: var(--sand); font-family: var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+  /* ================= DECK / SLIDE SHELL ================= */
+  .deck { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+  .deck::-webkit-scrollbar { display: none; }
+  .slide { position: relative; min-height: 100vh; scroll-snap-align: start; scroll-snap-stop: always; display: grid; align-content: center; padding: clamp(3rem, 7vw, 8rem) clamp(1.5rem, 7vw, 9rem); overflow: hidden; }
+  .slide > .inner { position: relative; z-index: 1; max-width: 1160px; width: 100%; margin: 0 auto; }
+
+  /* Ambient: faint accent glow + dotted grid, fixed behind everything */
+  .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .ambient::before { content: ""; position: absolute; inset: 0; background: radial-gradient(120% 90% at 82% 8%, rgba(236,152,115,0.16), transparent 55%), radial-gradient(90% 80% at 4% 96%, rgba(176,73,44,0.12), transparent 60%); }
+  .ambient::after { content: ""; position: absolute; inset: 0; opacity: 0.5; background-image: radial-gradient(rgba(163,144,124,0.10) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 55%, transparent 100%); mask-image: radial-gradient(120% 100% at 50% 40%, #000 55%, transparent 100%); }
+
+  /* ================= TYPE ================= */
+  .eyebrow { font-family: var(--mono); font-size: clamp(0.7rem, 1vw, 0.82rem); letter-spacing: 0.22em; text-transform: uppercase; color: var(--clay); display: inline-flex; align-items: center; gap: 0.7rem; }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--clay-deep); }
+  h1 { font-size: clamp(2.6rem, 6.6vw, 6rem); line-height: 0.98; letter-spacing: -0.03em; font-weight: 800; color: var(--paper); text-wrap: balance; }
+  h2 { font-size: clamp(2rem, 4.6vw, 3.9rem); line-height: 1.02; letter-spacing: -0.025em; font-weight: 780; color: var(--paper); text-wrap: balance; }
+  .accent { color: var(--clay-bright); }
+  strong { color: var(--paper); font-weight: 650; }
+  .card { background: linear-gradient(180deg, var(--panel), var(--ground-2)); border: 1px solid var(--line); border-radius: 16px; padding: clamp(1.3rem, 2.2vw, 2rem); }
+  .mono { font-family: var(--mono); }
+
+  /* ================= CHROME ================= */
+  .chrome { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; padding: 0.9rem clamp(1.5rem, 7vw, 9rem); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--faint); pointer-events: none; }
+  .wordmark { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--muted); }
+  .wordmark .star { color: var(--clay); font-size: 0.95rem; }
+  .counter { color: var(--muted); } .counter b { color: var(--paper); font-weight: 600; }
+  .rail { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 21; background: var(--line-soft); }
+  .rail > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--clay-deep), var(--clay)); transition: width .45s cubic-bezier(.22,1,.36,1); }
+  .hint { position: fixed; z-index: 20; top: 1rem; right: clamp(1.5rem, 7vw, 9rem); font-family: var(--mono); font-size: 0.68rem; letter-spacing: .1em; color: var(--faint); display: inline-flex; align-items: center; gap: .5rem; opacity: .9; transition: opacity .6s ease; }
+  .hint kbd { font-family: var(--mono); color: var(--sand); border: 1px solid var(--line); border-radius: 5px; padding: .12rem .4rem; font-size: .66rem; background: var(--panel); }
+  .pdfbtn { position: fixed; z-index: 22; top: 1rem; left: clamp(1.5rem, 7vw, 9rem); font-family: var(--mono); font-size: 0.68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sand); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: .4rem .8rem; cursor: pointer; opacity: .85; }
+  .pdfbtn:hover { color: var(--paper); border-color: var(--clay-deep); }
+
+  /* ================= REVEAL ON ENTRY ================= */
+  .slide .inner > * { opacity: 0; transform: translateY(14px); }
+  .slide.live .inner > * { opacity: 1; transform: none; transition: opacity .6s ease, transform .6s cubic-bezier(.22,1,.36,1); }
+  .slide.live .inner > *:nth-child(2) { transition-delay: .07s; }
+  .slide.live .inner > *:nth-child(3) { transition-delay: .14s; }
+  .slide.live .inner > *:nth-child(4) { transition-delay: .21s; }
+  .slide.live .inner > *:nth-child(5) { transition-delay: .28s; }
+  @media (prefers-reduced-motion: reduce) { .slide .inner > * { opacity: 1; transform: none; } .rail > i { transition: none; } }
+
+  /* ================= ARCHETYPE STYLES =================
+     See reference/slide-patterns.md for the HTML that uses each of these. */
+
+  /* Cover */
+  .cover .wm { display: inline-flex; align-items: center; gap: .8rem; font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; font-size: .8rem; color: var(--muted); }
+  .cover .wm .dot { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 10px; color: var(--clay); font-size: 1.15rem; background: var(--panel); }
+  h1 + .sub, .cover .sub { display: flex; flex-direction: column; gap: 1rem; max-width: 54ch; margin-top: 1.6rem; }
+  .cover .sub p { font-size: clamp(1.05rem, 1.7vw, 1.4rem); line-height: 1.5; color: var(--sand); }
+  .tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.6rem; }
+  .tag { font-family: var(--mono); font-size: .74rem; letter-spacing: .04em; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: .32rem .8rem; background: rgba(36,26,18,.6); }
+  .tag.accent-tag { color: var(--clay-bright); border-color: var(--clay-deep); }
+
+  /* Two-column */
+  .two { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(1.6rem, 3.5vw, 3.4rem); align-items: center; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  .head-block { display: flex; flex-direction: column; gap: 1.2rem; }
+  .points { display: flex; flex-direction: column; gap: 1.1rem; }
+  .point { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
+  .point .n { font-family: var(--mono); color: var(--clay); font-size: .85rem; padding-top: .2rem; }
+  .point p { color: var(--sand); line-height: 1.5; font-size: 1.06rem; }
+  .callout { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, var(--panel-2), var(--ground-2)); }
+  .callout .top { display: flex; align-items: center; gap: .7rem; padding: .95rem 1.2rem; border-bottom: 1px solid var(--line-soft); font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; color: var(--clay); }
+  .callout .top .badge { width: 8px; height: 8px; border-radius: 50%; background: var(--clay); box-shadow: 0 0 0 4px rgba(236,152,115,.14); }
+  .callout .body { padding: 1.3rem 1.3rem 1.5rem; display: flex; flex-direction: column; gap: .9rem; }
+  .callout .name { font-family: var(--mono); color: var(--paper); font-size: 1.05rem; }
+  .callout p { color: var(--sand); line-height: 1.55; font-size: 1.02rem; }
+  .callout .foot { font-size: .9rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: .9rem; }
+
+  /* Contrast cards + value chips */
+  .qcontrast { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-top: .5rem; }
+  @media (max-width: 860px) { .qcontrast { grid-template-columns: 1fr; } }
+  .qc { border: 1px solid var(--line); border-radius: 14px; padding: 1.2rem 1.3rem; background: var(--panel); }
+  .qc.muted { opacity: .72; }
+  .qc .who { font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .55rem; display: block; color: var(--clay); }
+  .qc.muted .who { color: var(--faint); }
+  .qc .q { font-size: 1.15rem; color: var(--paper); font-weight: 640; letter-spacing: -.01em; }
+  .qc p { color: var(--muted); font-size: .96rem; line-height: 1.45; margin-top: .5rem; }
+  .valuechips { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.4rem; }
+  .vchip { display: inline-flex; align-items: center; gap: .55rem; border: 1px solid var(--line); border-radius: 10px; padding: .55rem .9rem; background: rgba(36,26,18,.55); }
+  .vchip b { color: var(--paper); font-size: .98rem; font-weight: 640; }
+  .vchip span { color: var(--muted); font-size: .86rem; }
+  .vchip .d { width: 7px; height: 7px; border-radius: 50%; background: var(--clay); flex: none; }
+
+  /* Two-card mechanism / feature */
+  .mech { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: .4rem; }
+  @media (max-width: 860px) { .mech { grid-template-columns: 1fr; } }
+  .mech .card { display: flex; flex-direction: column; gap: .9rem; }
+  .mech .tagline { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--clay); }
+  .mech h3 { color: var(--paper); font-size: 1.35rem; font-weight: 760; letter-spacing: -.02em; }
+  .mech p { color: var(--sand); line-height: 1.55; font-size: 1.02rem; }
+  .mech ul { list-style: none; display: flex; flex-direction: column; gap: .55rem; margin-top: .2rem; }
+  .mech li { position: relative; padding-left: 1.3rem; color: var(--muted); font-size: .96rem; line-height: 1.45; }
+  .mech li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--clay-deep); }
+  .pull { margin-top: 1.6rem; font-size: clamp(1.15rem,2vw,1.7rem); color: var(--paper); line-height: 1.35; text-wrap: balance; letter-spacing: -.01em; }
+
+  /* Terminal card */
+  .term { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #0f0a06; margin-top: .5rem; }
+  .term .bar { display: flex; align-items: center; gap: .5rem; padding: .7rem 1rem; border-bottom: 1px solid var(--line-soft); }
+  .term .bar i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .term .bar .r { background: #e46a6a; } .term .bar .y { background: #e0a83a; } .term .bar .g { background: #4ec77f; }
+  .term .bar span { margin-left: .6rem; font-family: var(--mono); font-size: .72rem; color: var(--faint); letter-spacing: .06em; }
+  .term .body { padding: 1.2rem 1.3rem; display: flex; flex-direction: column; gap: .85rem; font-family: var(--mono); font-size: clamp(.85rem, 1.15vw, 1.02rem); line-height: 1.5; }
+  .term .line { display: block; word-break: break-all; } .term .prompt { color: var(--clay); } .term .cmd { color: var(--paper); } .term .cmt { color: var(--faint); } .term .flag { color: var(--clay-bright); }
+
+  /* Report / verdict cards */
+  .reports { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: .4rem; }
+  @media (max-width: 860px) { .reports { grid-template-columns: 1fr; } }
+  .report { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, var(--panel), var(--ground-2)); }
+  .report.pass { border-color: rgba(74,222,128,.35); } .report.fail { border-color: rgba(248,113,113,.42); }
+  .rhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1.1rem; border-bottom: 1px solid var(--line-soft); }
+  .rhead .cmd { font-family: var(--mono); font-size: .9rem; color: var(--paper); }
+  .rhead .badge { font-family: var(--mono); font-size: .74rem; letter-spacing: .1em; padding: .2rem .6rem; border-radius: 6px; flex: none; }
+  .report.pass .badge { color: var(--ok); background: rgba(74,222,128,.14); } .report.fail .badge { color: var(--err); background: rgba(248,113,113,.14); }
+  .scorebar { height: 6px; background: var(--line); }
+  .report.pass .scorebar .fill { height: 100%; background: linear-gradient(90deg,#34c46f,#5ee594); } .report.fail .scorebar .fill { height: 100%; background: linear-gradient(90deg,#e46a6a,#f88f8f); }
+  .score { display: flex; align-items: baseline; gap: .6rem; padding: .95rem 1.1rem .2rem; }
+  .score b { font-size: 2rem; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .report.pass .score b { color: #6fe6a0; } .report.fail .score b { color: #f79a9a; }
+  .score span { font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+  .findings { list-style: none; padding: .5rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .55rem; }
+  .findings li { font-size: .93rem; line-height: 1.4; color: var(--sand); display: flex; gap: .5rem; align-items: baseline; }
+  .findings .m { flex: none; font-family: var(--mono); } .findings.ok .m { color: var(--ok); } .findings.bad .m { color: var(--err); }
+  .findings.bad li b { color: var(--paper); font-weight: 640; }
+  .findings .loc { font-family: var(--mono); font-size: .72rem; color: var(--faint); }
+
+  /* Stat row */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: .3rem 0 1.6rem; }
+  @media (max-width: 860px) { .stat-grid { grid-template-columns: repeat(2,1fr); } }
+  .stat { border-top: 2px solid var(--line); padding-top: .9rem; display: flex; flex-direction: column; gap: .35rem; }
+  .stat .v { font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 800; letter-spacing: -.03em; color: var(--paper); font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat .v .u { color: var(--clay); font-size: .5em; font-weight: 600; margin-left: .12em; }
+  .stat .l { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .stat.hero .v { color: var(--clay-bright); }
+
+  :focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; border-radius: 4px; }
+
+  /* ================= PRINT / PDF =================
+     One slide per landscape page. Read reference/pdf-export.md for why the
+     forced-desktop-grid block below is load-bearing: without it, headless
+     print evaluates media queries at a narrow width, collapses every
+     responsive grid to its mobile layout, and a tall slide silently blanks. */
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: #14100b; }
+    .deck { height: auto; overflow: visible; scroll-snap-type: none; display: block; }
+    .rail, .hint, .chrome, .pdfbtn, .ambient { display: none !important; }
+    .slide { min-height: 0; height: 720px; width: 1280px; page-break-after: always; break-after: page; display: grid; align-content: center; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: radial-gradient(120% 90% at 82% 8%, rgba(236,152,115,0.16), transparent 55%), radial-gradient(90% 80% at 4% 96%, rgba(176,73,44,0.12), transparent 60%), #14100b; }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    .slide .inner > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .slide > .inner { padding-bottom: 26px; }
+    /* Re-assert desktop layouts (the load-bearing part): */
+    .two { grid-template-columns: 1.05fr 1fr !important; }
+    .mech, .qcontrast, .reports { grid-template-columns: 1fr 1fr !important; }
+    .stat-grid { grid-template-columns: repeat(4, 1fr) !important; }
+    .tags, .valuechips { flex-wrap: nowrap !important; }
+    /* Per-page footer baked into each slide (reads data-page): */
+    .slide::after { content: attr(data-page); position: absolute; bottom: 24px; right: 60px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: #7c6a5a; }
+    .slide::before { content: "\2733"; position: absolute; bottom: 24px; left: 60px; font-family: var(--mono); font-size: 12px; color: #a3907c; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"></div>
+<div class="rail"><i id="railfill"></i></div>
+<div class="hint" id="hint"><kbd>&larr;</kbd><kbd>&rarr;</kbd> to move &nbsp;·&nbsp; <kbd>F</kbd> full screen</div>
+<button class="pdfbtn" id="pdfbtn" type="button">&#8595; Save as PDF</button>
+
+<main class="deck" id="deck">
+
+  <!-- SLIDE 1 · COVER (archetype: cover) -->
+  <section class="slide cover" data-page="1 / 2">
+    <div class="inner">
+      <div class="wm"><span class="dot">&#10059;</span> Your brand &nbsp;·&nbsp; eyebrow</div>
+      <h1>The most characteristic<br />thing in your subject's<br /><span class="accent">world goes here.</span></h1>
+      <div class="sub">
+        <p>A one-line definition or the stakes. Say what this is and who it is for.</p>
+        <p>Keep it to two short lines. This slide is a promise, not a paragraph.</p>
+      </div>
+      <div class="tags">
+        <span class="tag accent-tag">the headline claim</span>
+        <span class="tag">a supporting fact</span>
+        <span class="tag">where to find it</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 · TWO-COLUMN (archetype: two + callout) -->
+  <section class="slide" data-page="2 / 2">
+    <div class="inner">
+      <div class="two">
+        <div class="head-block">
+          <span class="eyebrow">01 / The problem</span>
+          <h2>State the tension the audience already feels.</h2>
+          <div class="points">
+            <div class="point"><span class="n">&#10059;</span><p>One sharp sentence about why this matters, in their words.</p></div>
+            <div class="point"><span class="n">&#10059;</span><p>A second point that sets up your solution without naming it yet.</p></div>
+          </div>
+        </div>
+        <div class="callout">
+          <div class="top"><span class="badge"></span> A concrete example</div>
+          <div class="body">
+            <span class="name">example-name</span>
+            <p>A short, vivid, specific illustration. Real beats abstract.</p>
+            <div class="foot">The one-line takeaway that makes the point land.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="chrome">
+  <span class="wordmark"><span class="star">&#10059;</span> your brand</span>
+  <span class="counter"><b id="cur">1</b> / <span id="tot">2</span></span>
+</div>
+
+<script>
+(function () {
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var cur = document.getElementById('cur'), railfill = document.getElementById('railfill'), hint = document.getElementById('hint');
+  document.getElementById('tot').textContent = slides.length;
+  var index = 0;
+  function setActive(i) { index = Math.max(0, Math.min(slides.length - 1, i)); cur.textContent = index + 1; railfill.style.width = ((index) / Math.max(1, slides.length - 1) * 100) + '%'; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > 0.55) { e.target.classList.add('live'); setActive(slides.indexOf(e.target)); } });
+  }, { threshold: [0.55] });
+  slides.forEach(function (s) { io.observe(s); });
+  slides[0].classList.add('live');
+  function go(i) { i = Math.max(0, Math.min(slides.length - 1, i)); slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); go(index + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp') { e.preventDefault(); go(index - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F') { if (!document.fullscreenElement) { document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); } else { document.exitFullscreen && document.exitFullscreen(); } }
+  });
+  var pdfbtn = document.getElementById('pdfbtn');
+  if (pdfbtn) pdfbtn.addEventListener('click', function () { window.print(); });
+  // Print is not a scroll journey: reveal every slide so none exports blank.
+  window.addEventListener('beforeprint', function () { slides.forEach(function (s) { s.classList.add('live'); }); });
+  setTimeout(function () { if (hint) hint.style.opacity = '0'; }, 5200);
+})();
+</script>
+</body>
+</html>
