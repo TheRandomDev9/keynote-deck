@@ -22,7 +22,7 @@ It is a method, not one template: a design system, a library of slide
 archetypes to compose from, motion and keyboard mechanics, and the print rules
 that keep the PDF faithful to the screen.
 
-## Using it
+## Usage
 
 Ask Claude (with this skill available) to build a presentation:
 

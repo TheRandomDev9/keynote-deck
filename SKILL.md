@@ -3,6 +3,12 @@ name: keynote-deck
 description: Build a self-contained, presentation-ready HTML slide deck with an editorial dark-keynote aesthetic, keyboard navigation, scroll-snap slides, and one-click PDF export. Use when someone asks to make a presentation, slide deck, keynote, or to turn notes into slides they will present live or share.
 version: 1.0.0
 license: MIT
+tags:
+  - presentation
+  - slides
+  - deck
+  - keynote
+  - pdf
 triggers:
   - build a slide deck
   - make a presentation
